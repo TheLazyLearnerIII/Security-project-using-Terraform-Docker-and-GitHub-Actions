@@ -56,7 +56,7 @@ resource "aws_instance" "web" {
 
     # Attaching custom subnet
     subnet_id = aws_subnet.main.id
-    # Attaching security group with least-privilage rules
+    # Attaching security group with least-privilage rule
     vpc_security_group_ids = [aws_security_group.allow_tls.id]
     # Attaching IAM instance profile so that instance can use SSM read-only permissions
     iam_instance_profile = aws_iam_instance_profile.epm_profile.name
