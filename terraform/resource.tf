@@ -18,20 +18,20 @@ resource "aws_subnet" "main" {
       Name = "Main"
     }
 }
-# Security group rule
+# Security group rule egress rule for outbound traffic only
 
 resource "aws_security_group" "allow_tls" {
     name = "allow_tls"
     description = "Allow only outbound traffic"
     vpc_id = aws_vpc.main.id
-}
-# egress rule for outbound traffic only
 
-resource "aws_security_group_egress_rule" "allow_all_traffic_ipv4" {
-    security_group_id = aws_security_group.allow_tls.id
-    cidr_ipv4 = "0.0.0.0/0"
-    ip_protocol = "-1"
-}
+    egress = {
+      from_port = 0
+      to_port = 0
+      protocol = "-1"
+      cidr_block = ["0.0.0.0/0"]
+    }
+  }
 # EC2 Instance
 
 data "aws_ami" "ubuntu" {
