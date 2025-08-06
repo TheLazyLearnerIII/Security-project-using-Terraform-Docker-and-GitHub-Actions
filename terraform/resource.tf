@@ -21,17 +21,17 @@ resource "aws_subnet" "main" {
 # Security group rule egress rule for outbound traffic only
 
 resource "aws_security_group" "allow_tls" {
-    name = "allow_tls"
-    description = "Allow only outbound traffic"
-    vpc_id = aws_vpc.main.id
+  name        = "allow_tls"
+  description = "Allow only outbound traffic"
+  vpc_id      = aws_vpc.main.id
 
-    egress = {
-      from_port = 0
-      to_port = 0
-      protocol = "-1"
-      cidr_block = ["0.0.0.0/0"]
-    }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
+}
 # EC2 Instance
 
 data "aws_ami" "ubuntu" {
