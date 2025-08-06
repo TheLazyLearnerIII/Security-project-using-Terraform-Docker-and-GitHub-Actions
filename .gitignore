@@ -1,0 +1,25 @@
+# Local Terraform state
+*.tfstate
+*.tfstate.*
+
+# Crash log
+crash.log
+
+# Terraform plan output
+*.tfplan
+
+# Terraform provider binary
+.terraform/
+
+# Terraform variable override files
+*.tfvars
+*.tfvars.json
+
+# Sensitive credential files
+*.pem
+*.key
+*.crt
+
+# VS Code settings
+.vscode/
+
