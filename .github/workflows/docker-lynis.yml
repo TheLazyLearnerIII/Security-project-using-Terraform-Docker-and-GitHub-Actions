@@ -42,3 +42,13 @@ jobs: # Job is called lynis-scan
           path: logs/scan.log
           if-no-files-found: error
         # Publishes logs/scan.log as a downloadable artifact attached to the workflow run
+
+      - name: Debug workspace
+        run: |
+          pwd
+          ls -la
+          echo "---- docker dir ----"
+          ls -la docker || true
+          echo "---- Docker-lynis dir ----"
+          ls -la Docker-lynis || true
+
