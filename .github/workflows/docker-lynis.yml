@@ -18,7 +18,7 @@ jobs: # Job is called lynis-scan
         uses: docker/setup-buildx-action@v3 # Preps a modern Docker build environment (multi-platform capable, better caching). It’s the standard way to build images in Actions now
 
       - name: Build Lynis image
-        run: docker build -t lynis-sec ./docker/lynis 
+        run: docker build -t lynis-sec -f docker/lynis/Dockerfile . 
 
       - name: Prepare log directory
         run: mkdir -p logs # Creates a logs/ folder at the repo root on the runner. We’ll mount this into the container so the scan output lands in a place the runner can read.
