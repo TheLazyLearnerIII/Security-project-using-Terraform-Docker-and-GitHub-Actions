@@ -1,54 +1,62 @@
-# Displays name
-name: Docker Lynis Security Scan 
+name: Docker Lynis Security Scan
 
 on:
   push:
-    branches: [ main ] # will run automatically when pushed to main
-  workflow_dispatch:   # # Adds a "run workflow" button so it can be triggered manually
+    branches: [ main ]
+  workflow_dispatch:
 
-jobs: # Job is called lynis-scan
+concurrency:
+  group: docker-lynis-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
   lynis_scan:
-    runs-on: ubuntu-latest # gives you a ubuntu vm to do the work
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4 # Pulls your repository files into the runner so subsequent steps can access them
+        uses: actions/checkout@v4
+
+      - name: Debug workspace (show where the Dockerfile is)
+        run: |
+          pwd
+          echo "=== top level ==="
+          ls -la
+          echo "=== find Dockerfile (depth 4) ==="
+          find . -maxdepth 4 -iname "Dockerfile" -print
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3 # Preps a modern Docker build environment (multi-platform capable, better caching). It’s the standard way to build images in Actions now
+        uses: docker/setup-buildx-action@v3
 
+      # Change the path below if your Dockerfile is elsewhere
       - name: Build Lynis image
-        run: docker build -t lynis-sec -f docker/lynis/Dockerfile . 
+        run: docker build -t lynis-sec -f docker/lynis/Dockerfile .
 
       - name: Prepare log directory
-        run: mkdir -p logs # Creates a logs/ folder at the repo root on the runner. We’ll mount this into the container so the scan output lands in a place the runner can read.
+        run: mkdir -p logs
 
-      - name: Run Lynis container (write log to mounted folder)
+      - name: Run Lynis container (writes log to mounted folder)
         run: docker run --rm -v "${{ github.workspace }}/logs:/var/log/lynis-scan" lynis-sec
-        # docker run: starts the container based on the image we build
-        # --rm: cleans it up after exits
-        # -v "${{ github.workspace }}/logs:/var/log/lynis-scan": mounts the runner’s logs/ into the container at /var/log/lynis-scan
-        # The lynis-scan.sh writes to /var/log/lynis-scan/scan.log inside the container.
+
+      - name: Verify log created and non-empty
+        run: |
+          if [ ! -s logs/scan.log ]; then
+            echo "scan.log missing or empty"
+            exit 1
+          fi
 
       - name: Show last lines in summary
         run: |
           echo "### Lynis scan tail" >> $GITHUB_STEP_SUMMARY
           tail -n 50 logs/scan.log >> $GITHUB_STEP_SUMMARY
-        # Appends the last ~50 lines of the log into the run’s Summary tab so you can preview results without downloading the artifact
+
       - name: Upload scan log artifact
         uses: actions/upload-artifact@v4
         with:
           name: lynis-scan-log
           path: logs/scan.log
           if-no-files-found: error
-        # Publishes logs/scan.log as a downloadable artifact attached to the workflow run
 
-      - name: Debug workspace
-        run: |
-          pwd
-          ls -la
-          echo "---- docker dir ----"
-          ls -la docker || true
-          echo "---- Docker-lynis dir ----"
-          ls -la Docker-lynis || true
+
+
 
