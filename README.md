@@ -16,10 +16,6 @@ This project automates AWS infrastructure provisioning using Terraform and perfo
     - Security scans
     - Uploading logs as artifacts
 
-    +---------------------+       +---------------------+       +---------------------+
-|  Terraform CI/CD    | --->  |  AWS Infrastructure | --->  | Docker Lynis Scan   |
-|  (GitHub Actions)   |       |  (VPC, EC2, IAM)     |       | (Security Report)   |
-+---------------------+       +---------------------+       +---------------------+
 
 Project-Security/
 ├── terraform/                # Terraform configuration files
@@ -64,21 +60,6 @@ docker run --rm -v "$(pwd)/logs:/var/log/lynis-scan" lynis-sec
     - Terraform CI: Deploy AWS resources
     - Docker Lynis Security: Builds/runs container scan
 
-
-## Outputs
-
-Terraform Outputs
-    - EC2 Instance Public IP
-    - EC2 Instance ID
-
-Lynis Security Scan
-    - Output file: logs/scan.log
-======================================
-[ Lynis 3.0.8 Results ]              ||
-Hardening index : 72 [#######---]    ||
-Warnings        : 3                  ||
-Suggestions     : 5                  ||
-======================================
 
 ##  Important Note
 
